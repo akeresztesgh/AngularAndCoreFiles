@@ -10,10 +10,10 @@ import { Subscription } from 'rxjs';
 export class AppComponent {
   title = 'web';
   @ViewChild('flowAdvanced')
-  public flow: FlowDirective;
+  public flow!: FlowDirective;
 
   public autoupload: boolean = false;
-  public autoUploadSubscription: Subscription;
+  public autoUploadSubscription!: Subscription;
   
   ngAfterViewInit() {
     this.autoUploadSubscription = this.flow.events$.subscribe(event => {
@@ -25,7 +25,7 @@ export class AppComponent {
   }
 
   ngOnDestroy() {
-    this.autoUploadSubscription.unsubscribe();
+    this.autoUploadSubscription?.unsubscribe();
   }
 
   trackTransfer(idx: number, transfer?: Transfer) {
