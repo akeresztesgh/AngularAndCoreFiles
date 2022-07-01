@@ -1,0 +1,63 @@
+<h2>Simple example</h2>
+<div>
+  <ng-container #flow="flow" [flowConfig]="{target: 'https://localhost:7015/upload'}"></ng-container>
+    <input type="file" flowButton [flow]="flow.flowJs" [flowAttributes]="{accept: 'image/*, video/*'}" />
+    <div class="drop-area" flowDrop [flow]="flow.flowJs" style="width: 200px; height: 100px; ">
+      <br/>
+      <span>Drag&Drop to upload</span>
+    </div>
+    <div>Selected Files:</div>
+    <div *ngFor="let transfer of (flow.transfers$ | async)?.transfers">{{ transfer.name }} - {{transfer.progress}}</div>
+    <button type="button" (click)="flow.upload()" [disabled]="!(flow.somethingToUpload$ | async)">Start upload</button>
+  
+</div>
+
+<h2>Advanced example</h2>
+<p>Is flowjs supported by the browser? {{flow.flowJs?.support ? "yes" : "no"}}</p>
+
+<div>
+  <input type="checkbox" [(ngModel)]="autoupload"> Autoupload
+</div>
+
+<ng-container #flowAdvanced="flow" [flowConfig]="{target: 'https://localhost:7015/upload'}"></ng-container>
+
+<input type="file"
+       flowButton
+       [flow]="flowAdvanced.flowJs"
+       [flowAttributes]="{accept: 'image/*, video/*'}">
+
+<div class="drop-area"
+     flowDrop
+     [flow]="flowAdvanced.flowJs">
+     <span>Drop files here</span>
+</div>
+
+<div class="transfers">
+  <div class="transfer"
+       [ngClass]="{'transfer--error': transfer.error, 'transfer--success': transfer.success}"
+       *ngFor="let transfer of (flowAdvanced.transfers$ | async)?.transfers; trackBy: trackTransfer">
+    <div class="name">name: {{transfer.name}}</div>
+    <div>progress: {{transfer.progress | percent}}</div>
+    <div>size: {{transfer.size | number: '1.0'}} bytes</div>
+    <div>current speed: {{transfer.currentSpeed | number: '1.0'}} bytes/s</div>
+    <div>average speed: {{transfer.averageSpeed | number: '1.0'}} bytes/s</div>
+    <div>time ramining: {{transfer.timeRemaining}}s</div>
+    <div>paused: {{transfer.paused}}</div>
+    <div>success: {{transfer.success}}</div>
+    <div>complete: {{transfer.complete}}</div>
+    <div>error: {{transfer.error}}</div>
+
+    <!-- <div>
+      <img [flowSrc]="transfer">
+    </div> -->
+
+    <div>
+      <button (click)="flowAdvanced.pauseFile(transfer)">pause</button>
+      <button (click)="flowAdvanced.resumeFile(transfer)">resume</button>
+      <button (click)="flowAdvanced.cancelFile(transfer)">cancel</button>
+    </div>
+  </div>
+</div>
+<button type="button" (click)="flowAdvanced.upload()" [disabled]="!(flowAdvanced.somethingToUpload$ | async)">Start upload</button>
+<button type="button" (click)="flowAdvanced.cancel()" [disabled]="!(flowAdvanced.transfers$ | async)?.transfers?.length">Cancel all</button>
+Total progress: {{(flowAdvanced.transfers$ | async)?.totalProgress | percent}}
